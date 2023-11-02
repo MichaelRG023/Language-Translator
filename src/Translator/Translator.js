@@ -4,13 +4,15 @@ import { useState } from "react";
 
 
 
+
 const Translator=()=>{
     const [inputText,setInputText] = useState('');
     const [outputLang,setOutputLang]= useState('ar');
     const [OutputText, setOutputText] = useState('');
-    const [isTranslated, setIsTranslated] =useState();
+    const [isTranslated, setIsTranslated] = useState();
 
     const translate = () => {
+    console.log(outputLang)
     const options = {
 	method: 'POST',
 	headers: {
@@ -18,18 +20,36 @@ const Translator=()=>{
 		'X-RapidAPI-Key': process.env.REACT_APP_RapidAPI_Key ,
 		'X-RapidAPI-Host': 'microsoft-translator-text.p.rapidapi.com'
 	},
-	body: [
-		{
-			Text: 'I would really like to drive your car around the block a few times.'
-		}
-	]
+	body: `[{"Text":"${inputText}"}]`
+		 
 };
-  fetch(`${process.env.REACT_APP_BASE_URL}de${process.env.REACT_APP_Query_Params}`,options)
-    .then(response => response.json())
-    .then(response => console.log(response))
-    .catch(err => console.error(err));
-  }
-
+  fetch(`${process.env.REACT_APP_BASE_URL}${outputLang}${process.env.REACT_APP_Query_Params}`, options)
+    .then(response => {
+        if(response.status !== 200){
+            setIsTranslated(false);
+        console.log("there's an error");
+        return;
+    }
+    setIsTranslated(true);
+    response.json()
+        .then(response => {
+        const translatedText = response[0].translations[0].text;
+        setOutputText(translatedText);
+        console.log(translatedText)
+     })
+    
+   
+    .catch(err => {
+        setIsTranslated(false);
+        console.error(err)
+    });
+  })
+}
+const clearInput=()=> {
+    setIsTranslated();
+    setInterval('');
+    setOutputText('');
+}
        
 
     return(
@@ -49,9 +69,16 @@ const Translator=()=>{
                     className="text-box"
                     placeholder="Enter text (any language)"
                     onChange={e => setInputText(e.target.value)}
+                    value={inputText}
                     >
 
                     </textarea>
+                    { inputText !== "" &&
+                    <button
+                    className="icon-btn close-btn"
+                    onClick={clearInput}
+                     > Clear</button>
+                    }
                 </form>
             </div>
             <div className="translator-container output-lang>">
@@ -60,6 +87,7 @@ const Translator=()=>{
                     name="languages"
                      id="languages"
                      className="form-select form-select-sm"
+                     onChange={e => setOutputLang(e.target.value)}
                      >
                         <option value="ar">Arabic</option>
                         <option value="en">English</option>
@@ -68,7 +96,12 @@ const Translator=()=>{
                         <option value="es">Spanish</option>
                      </select>
                     <p className="text-box output-box">
-                        {OutputText}
+                        {
+                        OutputText === "" ? 
+                        <span className="output-placeholder">select a language</span>
+                        :
+                        OutputText
+                            }
                     </p>
                  </div>
               </div>
@@ -76,7 +109,7 @@ const Translator=()=>{
          </section>
 
        
-    )
+    );
 }
 
 export default Translator;
