@@ -15,7 +15,7 @@ const Translator=()=>{
 	method: 'POST',
 	headers: {
 		'content-type': 'application/json',
-		'X-RapidAPI-Key': 'aefb6f42cfmshbdd9cfaf1e993b3p12ca95jsn390eb346d41a',
+		'X-RapidAPI-Key': process.env.REACT_APP_RapidAPI_Key ,
 		'X-RapidAPI-Host': 'microsoft-translator-text.p.rapidapi.com'
 	},
 	body: [
@@ -24,7 +24,7 @@ const Translator=()=>{
 		}
 	]
 };
-  fetch('https://microsoft-translator-text.p.rapidapi.com/translate?to%5B0%5D=%3CREQUIRED%3E&api-version=3.0&profanityAction=NoAction&textType=plain',options)
+  fetch(`${process.env.REACT_APP_BASE_URL}de${process.env.REACT_APP_Query_Params}`,options)
     .then(response => response.json())
     .then(response => console.log(response))
     .catch(err => console.error(err));
