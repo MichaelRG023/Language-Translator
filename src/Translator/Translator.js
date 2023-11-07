@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './Translator.css'
 
 
 
@@ -12,42 +13,39 @@ const Translator=()=>{
     const [isTranslated, setIsTranslated] = useState();
 
     const translate = () => {
-    console.log(outputLang)
-    const options = {
-	method: 'POST',
+    console.log("outputLang:",outputLang)
+        
+     const options = {
+ 	method: 'POST',
 	headers: {
 		'content-type': 'application/json',
 		'X-RapidAPI-Key': process.env.REACT_APP_RapidAPI_Key ,
 		'X-RapidAPI-Host': 'microsoft-translator-text.p.rapidapi.com'
-	},
+ 	},
 	body: `[{"Text":"${inputText}"}]`
 		 
-};
-  fetch(`${process.env.REACT_APP_BASE_URL}${outputLang}${process.env.REACT_APP_Query_Params}`, options)
-    .then(response => {
+ };
+   fetch(`${process.env.REACT_APP_BASE_Url}${outputLang}${process.env.REACT_APP_Query_Params}`, options)
+     .then(response => {
         if(response.status !== 200){
             setIsTranslated(false);
         console.log("there's an error");
         return;
-    }
+     }
     setIsTranslated(true);
-    response.json()
+     response.json()
         .then(response => {
         const translatedText = response[0].translations[0].text;
         setOutputText(translatedText);
         console.log(translatedText)
-     })
-    
+      })
+    .catch(error=>console.error(error));
    
-    .catch(err => {
-        setIsTranslated(false);
-        console.error(err)
-    });
+    console.log("options:",options)
   })
 }
 const clearInput=()=> {
     setIsTranslated();
-    setInterval('');
     setOutputText('');
 }
        
